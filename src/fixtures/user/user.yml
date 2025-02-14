@@ -1,0 +1,25 @@
+entity: 'User'
+items:
+  user_1:
+    id: 'd2de68d1-f914-440c-bbd9-89e2524f788e'
+    role: 'ROLE_ADMIN'
+    firstName: 'Admin_1'
+    lastName: 'Admin_1'
+    email: 'admin1@email.com'
+    password: '123'
+
+  user_2:
+    id: 'ed6a1606-c502-45b2-a2ec-ba30b4318264'
+    role: 'ROLE_USER'
+    firstName: 'FirstName_1'
+    lastName: 'LastName_1'
+    email: 'user1@email.com'
+    password: '123'
+
+  user_3:
+    id: '3b8f56ef-3efe-41ba-bd31-b9221e39af9f'
+    role: 'ROLE_USER'
+    firstName: 'FirstName_2'
+    lastName: 'LastName_2'
+    email: 'user2@email.com'
+    password: '123'

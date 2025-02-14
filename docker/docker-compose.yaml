@@ -1,0 +1,88 @@
+networks:
+  api-network:
+    driver: 'bridge'
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: '127.0.0.1'
+
+services:
+  db:
+    image: 'timescale/timescaledb:latest-pg15'
+    environment:
+      POSTGRES_DB: 'api'
+      POSTGRES_PASSWORD: 'api'
+      POSTGRES_USER: 'api'
+    volumes:
+      - 'db:/var/lib/postgresql/data:rw'
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: 'tcp'
+    networks:
+      - 'api-network'
+
+  redis:
+    image: 'redis:7.0-alpine'
+    hostname: 'redis'
+    ports:
+      - target: 6379
+        published: 6379
+        protocol: 'tcp'
+    networks:
+      - 'api-network'
+
+  dev_tls:
+    build:
+      context: './dev-tls'
+    volumes:
+      - 'ssl:/certs/ssl:rw'
+      - 'rsa:/certs/rsa:rw'
+    ports:
+      - target: 80
+        published: 80
+        protocol: 'tcp'
+    networks:
+      - 'api-network'
+
+  minio:
+    image: 'minio/minio'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "https://localhost/minio/health/live" ]
+      interval: '30s'
+      timeout: '20s'
+      retries: 3
+    volumes:
+      - 'ssl:/root/.minio/certs'
+    ports:
+      - target: 443
+        published: 443
+        protocol: 'tcp'
+      - target: 4430
+        published: 4430
+        protocol: 'tcp'
+    environment:
+      MINIO_ROOT_USER: '123456789'
+      MINIO_ROOT_PASSWORD: '123456789'
+      MINIO_SERVER_URL: "https://localhost:443"
+      MINIO_BROWSER_REDIRECT_URL: "https://localhost:4430"
+    command: 'server --address ":443" --console-address ":4430" /data'
+    networks:
+      - 'api-network'
+
+  createbuckets:
+    image: 'minio/mc'
+    depends_on:
+      - 'minio'
+    networks:
+      - 'api-network'
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc --insecure config host add --api s3v4 myminio https://minio 123456789 123456789;
+      /usr/bin/mc --insecure mb myminio/kinetic;
+      /usr/bin/mc --insecure anonymous set public myminio/kinetic/;
+      exit 0;
+      "
+
+volumes:
+  db: { }
+  ssl: { }
+  rsa: { }
