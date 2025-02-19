@@ -6,3 +6,8 @@ export enum Roles {
 }
 
 export const RolesBuilderConfig = new RolesBuilder();
+
+RolesBuilderConfig.grant(Roles.USER)
+  .readAny(['files'])
+  .createAny(['files'])
+  .deleteAny(['files']);

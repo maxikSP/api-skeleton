@@ -4,6 +4,7 @@ import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { ConnectionOptionsReader } from 'typeorm';
 import { SecurityModule } from '@module/security/security.module';
 import { UserModule } from '@module/user/user.module';
+import { MediaModule } from '@module/media/media.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UserModule } from '@module/user/user.module';
     } as TypeOrmModuleAsyncOptions),
     SecurityModule,
     UserModule,
+    MediaModule,
   ],
   controllers: [],
   providers: [],
