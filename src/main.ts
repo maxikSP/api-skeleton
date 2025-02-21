@@ -8,6 +8,7 @@ import { AppValidationError } from '@module/app.validation.error';
 import { AppModule } from '@module/app.module';
 import fastifyMultipart from '@fastify/multipart';
 import swagger from '@module/app.swagger';
+import AppContext from '@module/app.context';
 
 async function bootstrap(): Promise<void> {
   const app: NestFastifyApplication =
@@ -35,6 +36,8 @@ async function bootstrap(): Promise<void> {
     });
 
   swagger(app);
+
+  AppContext.setContext(app);
 
   await app.register(fastifyMultipart);
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
