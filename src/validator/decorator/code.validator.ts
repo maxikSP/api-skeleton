@@ -15,11 +15,10 @@ export class CodeConstraint implements ValidatorConstraintInterface {
     args: ValidationArguments,
   ): Promise<boolean> {
     const [field] = args.constraints;
-    // @ts-ignore
     const fieldValue = args.object[field];
 
     const redisService = AppContext.getService(RedisService) as RedisService;
-    const f = await redisService.getOrThrow('default').get(fieldValue as string);
+
     return (
       value ===
       (await redisService.getOrThrow('default').get(fieldValue as string))
