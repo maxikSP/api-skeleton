@@ -16,7 +16,6 @@ import { randomInt } from 'crypto';
   routes: {
     only: ['updateOneBase'],
     updateOneBase: {
-      returnShallow: true,
       allowParamsOverride: true,
     },
   },
