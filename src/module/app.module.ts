@@ -7,6 +7,7 @@ import { HealthModule } from '@module/health/health.module';
 import { MailerModule } from '@module/mailer/mailer.module';
 import { SecurityModule } from '@module/security/security.module';
 import { UserModule } from '@module/user/user.module';
+import { MediaModule } from '@module/media/media.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { UserModule } from '@module/user/user.module';
     MailerModule,
     SecurityModule,
     UserModule,
+    MediaModule,
   ],
   controllers: [],
   providers: [],
