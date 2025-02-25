@@ -4,9 +4,9 @@ services:
       context: '../'
       target: 'node-app'
     environment:
-      NODE_ENV: 'dev'
-    volumes:
-      - ../.:/var/www/html
+      NODE_ENV: 'local'
+#    volumes:
+#      - ../.:/var/www/html
     ports:
       - target: 3000
         published: 3000
