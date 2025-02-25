@@ -6,7 +6,7 @@ networks:
 
 services:
   db:
-    image: 'timescale/timescaledb:latest-pg15'
+    image: 'postgres:17-alpine'
     environment:
       POSTGRES_DB: 'api'
       POSTGRES_PASSWORD: 'api'
@@ -77,8 +77,8 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc --insecure config host add --api s3v4 myminio https://minio 123456789 123456789;
-      /usr/bin/mc --insecure mb myminio/kinetic;
-      /usr/bin/mc --insecure anonymous set public myminio/kinetic/;
+      /usr/bin/mc --insecure mb myminio/api;
+      /usr/bin/mc --insecure anonymous set public myminio/api/;
       exit 0;
       "
 
