@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, S3ClientConfig } from '@aws-sdk/client-s3';
 import { AwsSdkModule } from 'aws-sdk-v3-nest';
 import { UploadController } from '@module/media/controller/upload.controller';
 import { ConfigService } from '@nestjs/config';
@@ -25,7 +25,7 @@ import { File } from '@module/media/entity/file';
             accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
             secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
           },
-        } as any);
+        } as S3ClientConfig);
       },
     } as any),
     TypeOrmModule.forFeature([File]),
