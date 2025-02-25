@@ -8,6 +8,14 @@ export enum Roles {
 export const RolesBuilderConfig = new RolesBuilder();
 
 RolesBuilderConfig.grant(Roles.USER)
-  .readAny(['files'])
   .createAny(['files'])
-  .deleteAny(['files']);
+  .readAny(['user', 'files'])
+  .readOwn(['user', 'files'])
+  .updateOwn(['user'])
+  .deleteOwn(['user', 'files']);
+
+RolesBuilderConfig.grant(Roles.ADMIN)
+  .extend([Roles.USER])
+  .createAny(['user', 'files'])
+  .updateAny(['user', 'files'])
+  .deleteAny(['user', 'files']);
