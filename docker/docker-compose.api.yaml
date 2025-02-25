@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: '../'
+      target: 'node-app'
+    environment:
+      NODE_ENV: 'dev'
+    volumes:
+      - ../.:/var/www/html
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: 'tcp'
+    depends_on:
+      - 'db'
+      - "redis"
+      - "minio"
+    networks:
+      - 'api-network'
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://api:3000/api/docs
+      interval: 30s
+      timeout: 30s
+      retries: 5
