@@ -5,20 +5,18 @@ services:
       target: 'node-app'
     environment:
       NODE_ENV: 'local'
-#    volumes:
-#      - ../.:/var/www/html
     ports:
       - target: 3000
         published: 3000
         protocol: 'tcp'
     depends_on:
       - 'db'
-      - "redis"
-      - "minio"
+      - 'redis'
+      - 'minio'
     networks:
       - 'api-network'
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://api:3000/api/docs
-      interval: 30s
-      timeout: 30s
+      test: 'wget --no-verbose --tries=1 --spider http://api:3000/api/health/liveness'
+      interval: '30s'
+      timeout: '30s'
       retries: 5
