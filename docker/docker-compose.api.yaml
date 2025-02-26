@@ -13,10 +13,31 @@ services:
       - 'db'
       - 'redis'
       - 'minio'
+    volumes:
+      - 'media:/data:rw'
     networks:
       - 'api-network'
     healthcheck:
       test: 'wget --no-verbose --tries=1 --spider http://api:3000/api/health/liveness'
+      interval: '30s'
+      timeout: '30s'
+      retries: 5
+
+  nginx:
+    image: 'nginx:1.27.4-alpine'
+    ports:
+      - target: 443
+        published: 4431
+        protocol: 'tcp'
+    volumes:
+      - './nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:rw'
+      - 'ssl:/certs:ro,nocopy'
+    depends_on:
+      - 'api'
+    networks:
+      - 'api-network'
+    healthcheck:
+      test: 'curl -fk https://nginx:443/health'
       interval: '30s'
       timeout: '30s'
       retries: 5
