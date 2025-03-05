@@ -14,7 +14,6 @@ module.exports = [
     logging: process.env.TYPEORM_LOGGING,
     entities: [process.env.TYPEORM_ENTITIES],
     migrations: [process.env.TYPEORM_MIGRATIONS],
-    seeds: [process.env.TYPEORM_SEEDING_SEEDS],
     subscribers: [process.env.TYPEORM_SUBSCRIBERS],
   }),
 ];

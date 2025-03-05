@@ -1,16 +1,17 @@
 networks:
   api-network:
     driver: 'bridge'
-    driver_opts:
-      com.docker.network.bridge.host_binding_ipv4: '127.0.0.1'
+    ipam:
+      config:
+        - subnet: '175.4.0.0/16'
 
 services:
   db:
-    image: 'timescale/timescaledb:latest-pg15'
+    image: 'postgres:17-alpine'
     environment:
       POSTGRES_DB: 'api'
-      POSTGRES_PASSWORD: 'api'
       POSTGRES_USER: 'api'
+      POSTGRES_PASSWORD: 'api'
     volumes:
       - 'db:/var/lib/postgresql/data:rw'
     ports:
@@ -19,6 +20,11 @@ services:
         protocol: 'tcp'
     networks:
       - 'api-network'
+    healthcheck:
+      test: 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'
+      interval: '30s'
+      timeout: '30s'
+      retries: 5
 
   redis:
     image: 'redis:7.0-alpine'
@@ -29,6 +35,11 @@ services:
         protocol: 'tcp'
     networks:
       - 'api-network'
+    healthcheck:
+      test: 'redis-cli ping'
+      interval: '30s'
+      timeout: '30s'
+      retries: 5
 
   dev_tls:
     build:
@@ -45,11 +56,6 @@ services:
 
   minio:
     image: 'minio/minio'
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "https://localhost/minio/health/live" ]
-      interval: '30s'
-      timeout: '20s'
-      retries: 3
     volumes:
       - 'ssl:/root/.minio/certs'
     ports:
@@ -59,14 +65,21 @@ services:
       - target: 4430
         published: 4430
         protocol: 'tcp'
+    depends_on:
+      - 'dev_tls'
     environment:
       MINIO_ROOT_USER: '123456789'
       MINIO_ROOT_PASSWORD: '123456789'
-      MINIO_SERVER_URL: "https://localhost:443"
-      MINIO_BROWSER_REDIRECT_URL: "https://localhost:4430"
+      MINIO_SERVER_URL: 'https://localhost:443'
+      MINIO_BROWSER_REDIRECT_URL: 'https://localhost:4430'
     command: 'server --address ":443" --console-address ":4430" /data'
     networks:
       - 'api-network'
+    healthcheck:
+      test: 'curl -fk https://localhost/minio/health/live'
+      interval: '30s'
+      timeout: '30s'
+      retries: 5
 
   createbuckets:
     image: 'minio/mc'
@@ -77,8 +90,8 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc --insecure config host add --api s3v4 myminio https://minio 123456789 123456789;
-      /usr/bin/mc --insecure mb myminio/kinetic;
-      /usr/bin/mc --insecure anonymous set public myminio/kinetic/;
+      /usr/bin/mc --insecure mb myminio/api;
+      /usr/bin/mc --insecure anonymous set public myminio/api/;
       exit 0;
       "
 
@@ -86,3 +99,4 @@ volumes:
   db: { }
   ssl: { }
   rsa: { }
+  media: { }
